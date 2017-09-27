@@ -1,0 +1,359 @@
+---
+title: "Lab 4"
+author: "Your name here"
+date: "Date here"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# General information
+This lab is due October 5th by 3 pm. You must upload your .rmd file and knitted PDF to the dropbox on D2L. This lab is worth 20 points. You are welcome and encouraged to talk with classmates and ask for help. However, each student should turn in their own lab assignment and all answers, including all code, needs to be solely your own.
+
+# Objective
+The goal of this lab is to get familiar working with the normal distribution, including calculating area under the curve and probability of observations. You will also learn to run one and two-sample t.tests and interpret their results.
+
+**\textcolor{blue} {This lab may be much easier to follow if you read through it in PDF format first. There are some symbols and formulae that are rendered in PDF format but not in R markdown.}**
+
+# The normal distribution
+The normal distribution is *the* classic distribution that all of statistics is built on. The default normal distribution has a mean of 0 and a standard deviation of 1. 
+
+There are four built-in calculations in R that are commonly used to work with the normal distribution. You will be using all 4 of these today.
+
+  1. `rnorm(n, mean, sd)` randomly generates *n* random numbers from a normal distribution with your specified mean and standard deviation.
+  2. `dnorm(x, mean, sd)` gives the probability density function at value *x* for a distribution with your specified mean and standard deviation. The function dnorm()will generate the normal distribution curve if x is a sequence of numbers rather than a single number
+  3. `pnorm(q, mean, sd)` gives  the area under the normal curve *to the left* of value *q*. To get the area under the qurve to the *right* of *q*, you can specify `pnorm(q, mean, sd, lower.tail=FALSE)`. The function `pnorm()` will generate the cumulative distribution function if *q* is a sequence of numbers rather than a single number.
+  4. `qnorm(p, mean, sd)` gives the inverse of the *pnorm* function. In other words, it gives the value at which the cumulative distribution function is *p* for your specified mean and standard deviation.
+
+## Plotting the normal distribution
+Let's take a look at the standard normal curve:
+```{r}
+# create a list of possible X values
+x.values <- seq(-5, 5, .01) 
+# calculate the probability density of each X value
+prob.x.values <- dnorm(x = x.values, mean = 0, sd = 1)
+# plot the standard normal distribution
+plot(x = x.values, y = prob.x.values, xlab="X", ylab="Density",
+     type="l", lwd=2, main="Standard Normal Distribution")
+```
+
+The normal distribution plot shows the probability density of each value of X for the standard normal distribution ($\mu$ = 0, $\sigma$ = 1). We could vary the other arguments in the `dnorm()` function to alter the shape of the curve. Some notes on the plot : by including `type = "l` in the plotting argument I am plotting a smoothed line curve, rather than a bunch of different (x, y) points. 
+
+
+What is a probability density function? Since a continuous variable takes on an infinite number of possible values, the probability of any one given value of X (for instance X= 1.001) is infinitely small. Therefore we plot a probability density on the Y axis, rather than raw probabilities.  You can think of the y-axis as a relative probability of each value of X (i.e. which are more or less likely). When we calculate probabilities using the normal distribution, we are usually looking at the probability of a value falling *within a certain range* of X values.
+
+\textcolor{red}{\textbf{Question 1: } Plot a normal distribution with $\mu = 10$ and $\sigma = 1.5$.}
+
+```{r}
+# your code here
+```
+
+```{r, Question 1 key, include = FALSE}
+# create a list of possible X values
+x.values <- seq(0, 20, .01) 
+# calculate the probability density of each X value
+prob.x.values <- dnorm(x = x.values, mean = 10, sd = 1.5)
+# plot the standard normal distribution
+plot(x.values, prob.x.values, xlab="X", ylab="Density", type="l",
+     lwd=2, main="Standard Normal Distribution")
+```
+
+## Calculating probability
+The `pnorm` function calculates the probability of observing anything less than or equal to a given value of X. It is equivalent to finding the area underneath the curve to the left of X. The pnorm argument is constructed as : `pnorm (q = , mean =, sd = )`, where q is the value of X (often a test statistic or observed mean), and mean and sd are the parameters describing your normal distribution (mean = $\mu$ and sd = $\sigma$). For example, on the standard normal curve, the probability of observing a value of 0 or less is:
+```{r}
+pnorm(q = 0, mean = 0, sd = 1)
+```
+
+This should make intuitive sense. The standard normal curve is centered on X = 0, so there is a 50% chance of observing a value <= 0. 
+
+Visually, we can see that half of the area underneath the curve is to the left of 0:
+```{r}
+x.values <- seq(-5, 5, .01) 
+{plot(x.values, dnorm(x.values, 0, 1), xlab="X", ylab="Density", type="l",
+     lwd=2, main="Standard Normal Distribution")
+abline(v = 0)
+coord.x<-seq(-5,0, by=.01)
+coord.y<-dnorm(coord.x, mean=0, sd=1)
+polygon(c(-5, coord.x, 0), c(0, coord.y,0),  col="lightgreen", border=FALSE)}
+```
+
+Let's plot the chance of observing an outcome less than or equal to -2.5, given the standard normal:
+```{r}
+x.values <- seq(-5, 5, .01) 
+{plot(x.values, dnorm(x.values, 0, 1), xlab="X", ylab="Density", type="l",
+     lwd=2, main="Standard Normal Distribution")
+abline(v = 0)
+coord.x<-seq(-5,-2.5, by=.01)
+coord.y<-dnorm(coord.x, mean=0, sd=1)
+polygon(c(-5, coord.x, -2.5), c(0, coord.y,0),  col="lightgreen", border=FALSE)}
+```
+
+\textcolor{red}{\textbf{Question 2: } What is the area of shaded green on the above plot? In other words, find the probability of observing a value less than or equal to -2.5, for the standard normal curve. Print out the value.}
+
+```{r}
+# Your code here
+```
+
+```{r, Question 2 key, include=FALSE}
+pnorm(-2.5, 0, 1)
+# 0.0062
+```
+
+\textcolor{red}{\textbf{Question 3: } What is the total area under any normal distribution? (Note: If you aren't sure, you can approximate it using a function above.) Why?}
+
+*Your answer here*
+
+```{r, Question 3 key, include=FALSE}
+# The area under the curve is equal to 1
+```
+
+
+\textcolor{red}{\textbf{Question 4: } Using one of the functions described above that we *haven't* used yet, sample 10 times from a normal distribution with $\mu = 4$ and $\sigma = 1.5$. Graph a histogram of your samples. How close is your sample mean ($\bar{X}$) to $\mu$? How close is your sample standard deviation (s) to $\sigma$? Do this again, but sampling 100 times and then 1,000 times from the distribution. What happens and why?}
+
+```{r}
+# Your code here
+```
+
+*Your answer here*
+
+```{r, Question 4  key, include=FALSE}
+samp.10 <- rnorm(n = 10, mean = 4, sd = 1.5)
+hist(samp.10)
+mean(samp.10); sd(samp.10)
+samp.100 <- rnorm(n = 100, mean = 4, sd = 1.5)
+hist(samp.100)
+mean(samp.100); sd(samp.100)
+samp.1000 <- rnorm(n = 1000, mean = 4, sd = 1.5)
+hist(samp.1000)
+mean(samp.1000); sd(samp.1000)
+
+#The samples start to look more normal
+```
+
+
+\textcolor{red}{\textbf{Question 5.} For a normal distribution with $\mu = 50$ and $\sigma = 0.5$, calculate the X value at which only $5$ percent of the area is to the left (less than or equal to X). Confirm this using $pnorm()$. Take a look at the four functions I've described at the beginning of the lab and pick the appropriate function.}
+
+```{r}
+# Your code here
+```
+
+*Your answer here* 
+
+```{r, question 5  key, include = FALSE}
+#5% of the area is to the left of 
+qnorm(.05,50,.5) #49.17757
+pnorm(49.17757,50, .5)
+```
+
+\textcolor{red}{\textbf{Question 6.} For the same normal distribution, calculate the X value at which $5$ percent of the area is to the right (i.e. greater than or equal to X). Sketch out the curve first to help you decide how to do this.}
+
+```{r}
+# your code here
+```
+
+
+```{r, question 6  key, include = FALSE}
+#95% of the area is to the right of 
+# 95% of the area is to the right of
+qnorm(0.95, 50, 0.5) #51.6
+```
+
+## The t-distribution
+
+The t-distribution  is also a continuous probability distribution that is closely related to the normal distribution. We use it when estimating the mean of a normal distribution when you have a small number of samples and the true population's standard deviation is unknown.
+
+Just like R has `rnorm()`, `dnorm()`, `pnorm()` and `qnorm()` for the normal distribution, there are correspoinding functions for the t-distribution (as well as almost any named distribution you can think of). They are `rt(n, df)`, `dt(x, df)`, `pt(q, df)`, and `qt(p, df)`. Here, *df* stands for the degrees of freedom. Therefore, instead of being described by mean and sd, t-distributions are just described by degrees of freedom. T-distributions are always centered around 0.
+
+Let's plot the standard normal distribution overlaid with the t-distribution for 5 degrees of freedom. To overlay a second line on an existing plot, you use the code `lines` instead of `plot`. I've used the curly brackets around my plotting codes so that R waits for all plotting commands before drawing the plot.
+
+```{r}
+x.values <- seq (-5, 5, by =.01)
+# probability density for standard normal
+y.values.normal <- dnorm(x.values, mean = 0, sd = 1)
+# probability density for T distribution with df = 5
+y.values.t <- dt(x.values, df = 5) 
+# plot the normal distribution in red
+{plot (x.values, y.values.normal, col="red", type="l")
+# plot the t distribution in blue
+lines (x.values, y.values.t, col = "blue", type = "l")}
+```
+
+\textcolor{red}{\textbf{Question 7.} What do you notice about the t-distribution relative to the normal distribution? Be specific in describing both the shape of the curves and location of the curves.} 
+
+*Your answer here*
+
+```{r, question 7  key, include = FALSE}
+# It is fatter around the tails
+```
+
+
+\textcolor{red}{\textbf{Question 8.} Plot the probability distribution function of the normal distribution with $\mu = 0$ and $\sigma = 1$ along with the t-distribution with increasing degrees of freedom. Include at least 4 t-distributions with different degrees of freedom. What happens as you increase the degrees of freedom of the t-distribution? Why does this happen?}
+
+```{r}
+# your code here
+```
+
+*Your answer here*
+
+```{r, question 8 key, include = FALSE}
+{plot (x.values, y.values.normal, col="red", type="l")
+lines(seq(-5,5,len=1000),dt(seq(-5,5,len=1000),2), col="pink", lty=2)
+lines(seq(-5,5,len=1000),dt(seq(-5,5,len=1000),5), col="purple", lty=2)
+lines(seq(-5,5,len=1000),dt(seq(-5,5,len=1000),10), col="red", lty=2)
+lines(seq(-5,5,len=1000),dt(seq(-5,5,len=1000),25), col="darkred", lty=2)}
+###Approximates normal as sampling number goes up.
+```
+
+# T-tests: one-sampled
+
+We use the T distribution to test whether an observed mean $(\bar{X})$ is different from the mean under the null hypothesis ($\mu_0$). For instance, from book example 11.3, researchers were testing whether human body temperature was different than the supposed normal body temperature of ($\mu_0 = 98.6$. Thus their null hypothesis is: 
+
+H0: mean(body temperature) is equal to 98.6
+
+HA: mean(body temperature) is not equal to 98.6
+
+They collected data from a random sample of people. 
+
+The data are:
+```{r}
+heat <- read.csv(url("http://www.zoology.ubc.ca/~schluter/WhitlockSchluter/wp-content/data/chapter11/chap11e3Temperature.csv"))
+head(heat)
+```
+
+\textcolor{red}{\textbf{Question 9.} Calculate the mean body temperature $(\bar{X})$ of their sample.}
+
+```{r}
+# your code here
+```
+
+*Your answer here*
+
+```{r, Question 9 key, include = FALSE}
+mean(heat$temperature)
+```
+
+The mean of the sample is not 98.6 degrees, exactly. But is it far off enough that we can reject the null hypothesis? What is the probability of observing our sample mean, or a mean more extreme, if the null is true $(\mu = 98.6)$? 
+
+If you've been paying attention to the first part of the lab, you might cleverly think that we could simply create a normal distribution with a mean of 98.6, and then calculate the area underneath the curve to the left of 98.524. That would give us the probability of observing our sample mean or one even lower, if the true population mean is 98.6 degrees. We could multiply by 2 to get our P-value.
+
+But, there's a big problem. We can't construct this null normal distribution because we don't know what the standard deviation of the population $(\sigma)$ is! Remember, to draw a normal distribution, we need to know the mean AND the standard deviation. So, instead of comparing our observed mean to a normal distribution, we need to compare our observed mean to a *t-distribution*
+
+The t-distribution illustrates the mean of a sample taken from a normally distributed population. Its shape is determined by the degrees of freedom, which you should have discovered in question #8. The degrees of freedom is the number of samples minus 1. The t-distribution is *not* described by a population standard deviation, which is great, because we don't know it! 
+
+\textcolor{red}{\textbf{Question 10.} Plot the t-distribution for the correct degrees of freedom in this problem.}
+
+```{r}
+# your code here
+```
+
+```{r, Question 10 key, include=FALSE}
+plot(seq(-5,5, by=.01), dt(seq(-5,5, by=.01), df=length(heat$temperature)-1), type="l")
+```
+
+If we want to compare our mean to the t-distribution, we run into some trouble. Our sample mean is nowhere near the curve, because the t-distribution is centered around 0, not 98.6. In order to compare our mean to the t-distribution, we need to standardize our sample mean. The standardized sample mean gives us a test statistic, t, given by the formula:
+
+$$t = \frac{\bar{Y} - \mu_0}{SE_{\bar{Y}}}$$
+
+Your book uses $\bar{Y}$ to denote a sample mean; this is equivalent to $\bar{X}$ which is also used to denote a sample mean. Note that the formula above will display nicely in the knitted PDF but is hard to read in markdown.
+
+\textcolor{red}{\textbf{Question 11.} Calculate the t statistic for your observed data. It may be useful to define variables like n, df, SE first, before doing the actual calculation, to avoid having a terribly messy fraction. If you are not sure where to begin, check out the example in the book, on p. 310. Comment your code so I can understand your approach.}
+
+```{r}
+# your code here
+```
+
+```{r, Question 11 key, include=FALSE}
+n <- length(heat$temperature)
+sd.sample <- sd(heat$temperature)
+se.sample <- sd(heat$temperature)/sqrt(n)
+mean.sample <- mean(heat$temperature)
+t.stat <- (mean.sample-98.6)/se.sample #-0.5606
+```
+
+*Your answer here* 
+
+\textcolor{red}{\textbf{Question 12.} Calculate the probability of observing a test statistic as or more extreme as yours, using area underneath the curve calculations. Think about whether a one-tailed or two-tailed is appropriate. It may be helpful to look at the t-distribution plot you made above, or follow along in the book. Report the probability.}
+
+```{r}
+# your code here
+```
+
+*Your answer here*
+
+```{r, Question 12 key, include=FALSE}
+2*pt(t.stat, df=n-1)
+# p value is 0.58
+```
+
+\textcolor{red}{\textbf{Question 13.} What does the probability you calculated in Question 11 tell you about the null hypothesis that the average body temperature is 98.6?}
+
+*Your answer here*
+
+```{r, Question 13 key, include=FALSE}
+# We can't reject the hypothesis that it is 98.6
+```
+
+
+#Example 1: Running one and two-sample T-tests in R
+T-tests are run in R using the `t.test()` function. There are many different ways to customize the T-test to run the specific type you need, as well as add corrections. Check out the ?t.test help page for information. 
+
+## One-sample test
+The simplest version of a T-test is the one-sample, for comparing the mean of a sample to a null mean. This is what you just ran, by hand. To run this in R, you need to give the function two arguments. The argument `x =` gives a vector of your sample measurements, and the second argument `mu = ` gives your expected mu under the null hypothesis. 
+For instance: `t.test( x = mydata$height, mu = 155)`
+
+\textcolor{red}{\textbf{Question 14.} Use the t.test function to test the hypothesis that mean body temperature is 98.6 degrees. Make sure your calculated P-value matches what you calculated above.}
+
+```{r}
+#your code here
+```
+
+*Your answer here*
+
+```{r, Question 14 key, include = TRUE}
+t.test(x = heat$temperature, mu = 98.6, alternative = "two.sided")
+```
+
+By default, R will run a two-tailed test, but this can be changed by including `alternative = "less"` or `alternative = "greater"` in your argument. For instance, with some made-up data, I could test H0: mu_0 = 35 with an alternative hypothesis HA: mu_0 > 35. (one-sided):
+```{r}
+myvalues <- c(44, 46, 29, 72, 90)
+t.test(myvalues, mu = 35, alternative = "greater")
+```
+
+You can also get confidence intervals for your estimate of mu, by adding $conf.int to the end of your t.test command. Confidence intervals only make sense for two-tailed tests, so do not include an `alternative = ` argument in your code. 
+```{r}
+t.test(myvalues, mu = 35)$conf.int
+```
+
+In this case, a 95% confidence interval for my data is 25.89 to 86.5. My mu_0 of 35 is within this interval so it is not surprising that the t.test fails to reject the null hypothesis. 
+
+
+\textcolor{red}{\textbf{Question 15.} Use the t.test function to calculate confidence intervals for the temperature data.}
+
+```{r}
+#your code here
+```
+
+*Your answer here*
+
+```{r, Question 15 key, include = TRUE}
+t.test(x = heat$temperature, mu = 98.6, alternative = "two.sided")$conf.int
+```
+
+
+## Two-sample test
+Lastly, to compare the means of two groups, you must give the t.test two samples to compare. If you run an unpaired t-test, the two sample sets do not need to be of equal length.
+```{r}
+myvalues2 <- c(34, 32, 30, 31, 32, 30, 19, 45)
+t.test(x = myvalues, y = myvalues2)
+```
+
+Some experiments used paired measurements; that is, they apply both treatments to every sampling unit. In these experimental designs, data are *paired*. For instance, a study might measure patients' blood pressure before and after receiving a medication. In this case, each patient is in both the "before" experimental group and the "after" experimental group, and the data are paired. To run a paired t-test, you add the argument `paired = TRUE` to the `t.test` argument.
+
+```{r}
+before <- c(150, 144, 128, 159, 141, 132, 129)
+after <- c(148, 142, 128, 165, 138, 128, 130)
+t.test( x = before, y = after, paired = TRUE)
+```
+

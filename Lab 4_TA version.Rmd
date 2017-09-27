@@ -24,7 +24,7 @@ There are four built-in calculations in R that are commonly used to work with th
 
   1. `rnorm(n, mean, sd)` randomly generates *n* random numbers from a normal distribution with your specified mean and standard deviation.
   2. `dnorm(x, mean, sd)` gives the probability density function at value *x* for a distribution with your specified mean and standard deviation. The function dnorm()will generate the normal distribution curve if x is a sequence of numbers rather than a single number
-  3. `pnorm(q, mean, sd)` gives  the area under the normal curve *to the left* of value *q*. To get the area under the qurve to the *right* of *q*, you can specify `pnorm(q, mean, sd, lower.tail=FALSE)`. The function `pnorm()` will generate the cumulative distribution function if *q* is a sequence of numbers rather than a single number.
+  3. `pnorm(q, mean, sd)` gives  the area under the normal curve *to the left* of value *q*. To get the area under the curve to the *right* of *q*, you can specify `pnorm(q, mean, sd, lower.tail=FALSE)`. The function `pnorm()` will generate the cumulative distribution function if *q* is a sequence of numbers rather than a single number.
   4. `qnorm(p, mean, sd)` gives the inverse of the *pnorm* function. In other words, it gives the value at which the cumulative distribution function is *p* for your specified mean and standard deviation.
 
 ## Plotting the normal distribution
@@ -39,7 +39,7 @@ plot(x = x.values, y = prob.x.values, xlab="X", ylab="Density",
      type="l", lwd=2, main="Standard Normal Distribution")
 ```
 
-The normal distribution plot shows the probability density of each value of X for the standard normal distribution ($\mu$ = 0, $\sigma$ = 1). We could vary the other arguments in the `dnorm()` function to alter the shape of the curve. Some notes on the plot : by including `type = "l` in the plotting argument I am plotting a smoothed line curve, rather than a bunch of different (x, y) points. 
+The aboved plot shows the probability density of each value of X for the standard normal distribution ($\mu$ = 0, $\sigma$ = 1). (is it worth it to make the students adjust the different variables of the normal distibutuon so they can see what the parameters do? ) We could vary the other arguments in the `dnorm()` function to alter the shape of the curve. Some notes on the plot : by including `type = "l` in the plotting argument I am plotting a smoothed line curve, rather than a bunch of different (x, y) points. 
 
 
 What is a probability density function? Since a continuous variable takes on an infinite number of possible values, the probability of any one given value of X (for instance X= 1.001) is infinitely small. Therefore we plot a probability density on the Y axis, rather than raw probabilities.  You can think of the y-axis as a relative probability of each value of X (i.e. which are more or less likely). When we calculate probabilities using the normal distribution, we are usually looking at the probability of a value falling *within a certain range* of X values.
@@ -133,7 +133,7 @@ mean(samp.1000); sd(samp.1000)
 ```
 
 
-\textcolor{red}{\textbf{Question 5.} For a normal distribution with $\mu = 50$ and $\sigma = 0.5$, calculate the X value at which only $5$ percent of the area is to the left (less than or equal to X). Confirm this using $pnorm()$. Take a look at the four functions I've described at the beginning of the lab and pick the appropriate function.}
+\textcolor{red}{\textbf{Question 5.} For a normal distribution with $\mu = 50$ and $\sigma = 0.5$, calculate the X value at which only $5$ percent of the area is to the left (less than or equal to X). Confirm this using $pnorm()$. Take a look at the four functions I've described at the beginning of the lab and pick the appropriate function.} I worry the students are going to be lost with out previous exposure to qnorm, but maybe you want them to be a bit lost 
 
 ```{r}
 # Your code here
@@ -150,7 +150,13 @@ pnorm(49.17757,50, .5)
 \textcolor{red}{\textbf{Question 6.} For the same normal distribution, calculate the X value at which $5$ percent of the area is to the right (i.e. greater than or equal to X). Sketch out the curve first to help you decide how to do this.}
 
 ```{r}
-# your code here
+x.values <- seq(45,55, length.out = 1000)
+
+x.dens <- dnorm(x.values, 50, .5 )
+
+plot( x= x.values, y= x.dens, type="l")
+
+qnorm(.95, 50,.5)
 ```
 
 
